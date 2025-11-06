@@ -1,7 +1,9 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, viewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import './hello-world.js';
-import './radio-group.js';
+//import './hello-world.js';
+//import './radio-group.js';
+import './wrec/hello-world.js';
+import './wrec/radio-group.js';
 
 @Component({
   selector: 'app-root',
@@ -12,8 +14,7 @@ import './radio-group.js';
 })
 export class App {
   readonly initialColor = 'red';
-
-  @ViewChild('helloWorldElement') helloWorldElement!: ElementRef;
+  private helloWorldRef = viewChild<ElementRef>('helloWorldTag');
 
   ngAfterViewInit(): void {
     this.updateColor(this.initialColor);
@@ -25,8 +26,7 @@ export class App {
   }
 
   updateColor(color: string) {
-    //TODO: Why is this called before this.helloWorldElement is set?
-    if (!this.helloWorldElement) return;
-    this.helloWorldElement.nativeElement.style.color = color;
+    const el = this.helloWorldRef();
+    if (el) el.nativeElement.style.color = color;
   }
 }
