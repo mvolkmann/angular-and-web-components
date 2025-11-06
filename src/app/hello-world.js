@@ -1,25 +1,24 @@
-// @ts-nocheck
 class HelloWorld extends HTMLElement {
   static get observedAttributes() {
-    return ["name"];
+    return ['name'];
   }
 
-  #name = "";
+  #name = '';
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
   }
 
   connectedCallback() {
     if (!this.#name) {
-      this.#name = this.getAttribute("name") || "World";
+      this.#name = this.getAttribute('name') || 'World';
     }
     this.render();
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === "name") this.name = newValue;
+    if (name === 'name') this.name = newValue;
   }
 
   get name() {
@@ -29,7 +28,7 @@ class HelloWorld extends HTMLElement {
   set name(newName) {
     if (newName === this.#name) return;
     this.#name = newName;
-    this.setAttribute("name", newName);
+    this.setAttribute('name', newName);
     this.render();
   }
 
@@ -39,6 +38,6 @@ class HelloWorld extends HTMLElement {
   }
 }
 
-if (!customElements.get("hello-world")) {
-  customElements.define("hello-world", HelloWorld);
+if (!customElements.get('hello-world')) {
+  customElements.define('hello-world', HelloWorld);
 }

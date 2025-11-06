@@ -1,10 +1,9 @@
-// @ts-nocheck
 const html = String.raw;
 
-const template = document.createElement("template");
+const template = document.createElement('template');
 template.innerHTML = html`
   <style>
-    div {
+    :host > div {
       display: flex;
       gap: 1rem;
 
@@ -19,46 +18,56 @@ template.innerHTML = html`
 `;
 
 export class RadioGroup extends HTMLElement {
-  labels = "";
-  name = "";
-  values = "";
-  #value = ""; // managed by a getter and setter
+  static get observedAttributes() {
+    return ['value'];
+  }
+
+  labels = '';
+  name = '';
+  values = '';
+  #value = ''; // managed by a getter and setter
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
   }
 
   connectedCallback() {
-    this.labels = this.getAttribute("labels");
-    this.name = this.getAttribute("name");
-    this.#value = this.getAttribute("initial");
-    this.values = this.getAttribute("values");
+    if (!this.labels) this.labels = this.getAttribute('labels');
+    if (!this.name) this.name = this.getAttribute('name');
+    if (!this.#value) this.#value = this.getAttribute('value');
+    if (!this.values) this.values = this.getAttribute('values');
 
     this.render();
 
-    const inputs = this.shadowRoot.querySelectorAll("input");
+    const inputs = this.shadowRoot.querySelectorAll('input');
     for (const input of inputs) {
-      input.addEventListener("change", (event) => {
+      input.addEventListener('change', (event) => {
         this.value = event.target.value;
       });
     }
+  }
+
+  attributeChangedCallback(name, _oldValue, newValue) {
+    if (name === 'value') this.value = newValue;
   }
 
   get value() {
     return this.#value;
   }
 
-  set value(v) {
-    this.#value = v;
+  set value(newValue) {
+    if (newValue === this.#value) return;
+    this.#value = newValue;
+    this.setAttribute('value', newValue);
 
-    const inputs = this.shadowRoot.querySelectorAll("input");
+    const inputs = this.shadowRoot.querySelectorAll('input');
     for (const input of inputs) {
       input.checked = input.value === this.#value;
     }
 
     this.dispatchEvent(
-      new CustomEvent("change", {
+      new CustomEvent('change', {
         detail: { value: this.#value },
         bubbles: true,
         composed: true,
@@ -67,8 +76,8 @@ export class RadioGroup extends HTMLElement {
   }
 
   makeButtons() {
-    const labelArray = this.labels.split(",");
-    const valueArray = this.values.split(",").map((value) => value.trim());
+    const labelArray = this.labels.split(',');
+    const valueArray = this.values.split(',').map((value) => value.trim());
     return valueArray
       .map(
         (value, index) =>
@@ -78,21 +87,21 @@ export class RadioGroup extends HTMLElement {
               id="${value}"
               name="${this.name}"
               value="${value}"
-              ${value === this.value ? "checked" : ""}
+              ${value === this.value ? 'checked' : ''}
             />
             <label for="${value}">${labelArray[index]}</label>
           </div>`
       )
-      .join("");
+      .join('');
   }
 
   render() {
     const dom = template.content.cloneNode(true);
-    dom.querySelector("div").innerHTML = this.makeButtons();
+    dom.querySelector('div').innerHTML = this.makeButtons();
     this.shadowRoot.replaceChildren(dom);
   }
 }
 
-if (!customElements.get("radio-group")) {
-  customElements.define("radio-group", RadioGroup);
+if (!customElements.get('radio-group')) {
+  customElements.define('radio-group', RadioGroup);
 }
