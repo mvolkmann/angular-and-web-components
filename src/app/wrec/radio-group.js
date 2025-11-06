@@ -13,7 +13,7 @@ class RadioGroup extends Wrec {
       display: flex;
       gap: 1rem;
 
-      & > div {
+      > div {
         display: flex;
         align-items: center;
         gap: 0.25rem;
